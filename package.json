@@ -10,6 +10,7 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
+    "standard": "^17.1.0",
     "vitest": "^1.2.2"
   }
 }
