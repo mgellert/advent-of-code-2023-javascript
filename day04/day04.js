@@ -2,8 +2,9 @@ export function parseLine (line) {
   const [head, tail] = line.split(':')
   const id = parseInt(head.match(/\d+/)[0], 10)
   const [have, winning] = parseTicketNumbers(tail)
+  const wins = countWins(have, winning)
 
-  return { id, have, winning }
+  return { id, have, winning, wins }
 }
 
 function parseTicketNumbers (raw) {
@@ -14,37 +15,28 @@ function parseTicketNumbers (raw) {
   return [have, winning]
 }
 
-export function score (ticket) {
-  let winningNumbers = 0
-
-  for (const n of ticket.have) {
-    if (ticket.winning.has(n)) {
-      if (winningNumbers === 0) {
-        winningNumbers = 1
-      } else {
-        winningNumbers *= 2
-      }
-    }
-  }
-
-  return winningNumbers
+function countWins (have, winning) {
+  return have.filter(n => winning.has(n)).length
 }
 
-export function sumPoints (lines) {
-  const tickets = lines.map(line => parseLine(line))
-
-  let points = 0
-
-  for (const ticket of tickets) {
-    points += score(ticket)
+export function score (ticket) {
+  if (ticket.wins === 0) {
+    return 0
+  } else {
+    return 2 ** (ticket.wins - 1)
   }
+}
 
-  return points
+export function sumScores (lines) {
+  return lines
+    .map(line => parseLine(line))
+    .map(ticket => score(ticket))
+    .reduce((acc, s) => acc + s, 0)
 }
 
 export function countTickets (lines) {
   const tickets = lines.map(line => parseLine(line))
-  const ticketCount = tickets.reduce((acc, ticket) => {
+  const ticketCounter = tickets.reduce((acc, ticket) => {
     acc[ticket.id] = 1
     return acc
   }, {})
@@ -53,19 +45,18 @@ export function countTickets (lines) {
     return acc
   }, {})
 
-  console.log(typeof ticketCount)
-  let total = Object.keys(ticketCount).length
+  console.log(typeof ticketCounter)
+  let total = Object.keys(ticketCounter).length
 
-  while (Object.values(ticketCount).reduce((acc, n) => acc + n, 0) > 0) {
-    const aaa = Object.entries(ticketCount).filter(([key, value]) => value > 0)
+  while (hasUncountedTickets(ticketCounter)) {
+    const aaa = Object.entries(ticketCounter).filter(([key, value]) => value > 0)
     const [id, count] = aaa[0].map(n => parseInt(n, 10))
     const ticket = ticketsMap[id]
-    const points = countWins(ticket)
 
-    ticketCount[id] = 0
+    ticketCounter[id] = 0
 
-    for (let i = id + 1; i <= id + points; i++) {
-      ticketCount[i] += count
+    for (let i = id + 1; i <= id + ticket.wins; i++) {
+      ticketCounter[i] += count
       total += count
     }
   }
@@ -73,14 +64,6 @@ export function countTickets (lines) {
   return total
 }
 
-function countWins (ticket) {
-  let wins = 0
-
-  for (const n of ticket.have) {
-    if (ticket.winning.has(n)) {
-      wins++
-    }
-  }
-
-  return wins
+function hasUncountedTickets (ticketCounter) {
+  return Object.values(ticketCounter).some(n => n > 0)
 }
