@@ -1,6 +1,6 @@
 export function parseLine (line) {
   const [head, tail] = line.split(':')
-  const id = parseInt(head.match(/\d+/)[0], 10)
+  const id = head.match(/\d+/)[0]
   const [have, winning] = parseTicketNumbers(tail)
   const wins = countWins(have, winning)
 
@@ -40,18 +40,16 @@ export function countTickets (lines) {
     acc[ticket.id] = 1
     return acc
   }, {})
-  const ticketsMap = tickets.reduce((acc, ticket) => {
+  const ticketById = tickets.reduce((acc, ticket) => {
     acc[ticket.id] = ticket
     return acc
   }, {})
 
-  console.log(typeof ticketCounter)
   let total = Object.keys(ticketCounter).length
 
   while (hasUncountedTickets(ticketCounter)) {
-    const aaa = Object.entries(ticketCounter).filter(([key, value]) => value > 0)
-    const [id, count] = aaa[0].map(n => parseInt(n, 10))
-    const ticket = ticketsMap[id]
+    const [id, count] = getFirstUncountedTicket(ticketCounter)
+    const ticket = ticketById[id]
 
     ticketCounter[id] = 0
 
@@ -66,4 +64,10 @@ export function countTickets (lines) {
 
 function hasUncountedTickets (ticketCounter) {
   return Object.values(ticketCounter).some(n => n > 0)
+}
+
+function getFirstUncountedTicket (ticketCounter) {
+  return Object.entries(ticketCounter)
+    .find(([_, value]) => value > 0)
+    .map(n => parseInt(n, 10))
 }
