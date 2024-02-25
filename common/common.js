@@ -8,3 +8,22 @@ export function readLines (path) {
 export function readAll (path) {
   return fs.readFileSync(path, 'utf8')
 }
+
+export class Point {
+  constructor (x, y) {
+    this.x = x
+    this.y = y
+  }
+
+  add (other) {
+    return new Point(this.x + other.x, this.y + other.y)
+  }
+
+  subtract (other) {
+    return new Point(other.x - this.x, other.y - this.y)
+  }
+
+  toString () {
+    return `Point(x = ${this.x},y = ${this.y})`
+  }
+}
