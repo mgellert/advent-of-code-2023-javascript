@@ -6,11 +6,11 @@ describe('day 10', () => {
   const testInput = readLines('./day10/test_input.txt')
   const input = readLines('./day10/input.txt')
 
-  test('asdsadsda', () => {
+  test('test farthest point in loop', () => {
     expect(countStepsToFarthest(testInput, 'F')).toBe(8)
   })
 
-  test('asdsa2dsda', () => {
+  test('solve part 1', () => {
     expect(countStepsToFarthest(input, '7')).toBe(6815)
   })
 })
