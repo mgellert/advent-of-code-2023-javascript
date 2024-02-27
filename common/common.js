@@ -23,6 +23,10 @@ export class Point {
     return new Point(other.x - this.x, other.y - this.y)
   }
 
+  equals (other) {
+    return this.x === other.x && this.y === other.y
+  }
+
   toString () {
     return `Point(x = ${this.x},y = ${this.y})`
   }
