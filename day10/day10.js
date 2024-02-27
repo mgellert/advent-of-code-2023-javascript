@@ -10,7 +10,7 @@ export function countStepsToFarthest (lines, startTile) {
   let next = getNextFromStart(diagram, start)
   let steps = 0
 
-  while (next.x !== start.x || next.y !== start.y) {
+  while (!start.equals(next)) {
     ([next, current] = step(diagram, current, next))
     steps++
   }
@@ -20,6 +20,55 @@ export function countStepsToFarthest (lines, startTile) {
   } else {
     return (steps + 1) / 2
   }
+}
+
+export function countEnclosedTiles (lines, startTile) {
+  const diagram = lines.map(line => line.split(''))
+
+  const start = findStart(diagram)
+  diagram[start.y][start.x] = startTile
+
+  let current = start
+  let next = getNextFromStart(diagram, start)
+
+  const pipe = new Set()
+  pipe.add(current.toString())
+
+  while (!start.equals(next)) {
+    ([next, current] = step(diagram, current, next))
+    pipe.add(current.toString())
+  }
+
+  let enclosedCount = 0
+
+  for (let y = 0; y < diagram.length; y++) {
+    let inside = false
+    let encounteredF = false
+    let encounteredL = false
+    for (let x = 0; x < diagram[y].length; x++) {
+      const item = (pipe.has(new Point(x, y).toString()) && diagram[y][x]) || '.'
+      if (item === '|') {
+        inside = !inside
+      } else if (item === 'F') {
+        encounteredF = true
+      } else if (item === 'L') {
+        encounteredL = true
+      } else if (item === 'J' && encounteredF) {
+        inside = !inside
+        encounteredF = false
+      } else if (item === '7' && encounteredF) {
+        encounteredF = false
+      } else if (item === '7' && encounteredL) {
+        inside = !inside
+        encounteredL = false
+      } else if (item === 'J' && encounteredL) {
+        encounteredL = false
+      } else if (inside && item !== '-') {
+        enclosedCount++
+      }
+    }
+  }
+  return enclosedCount
 }
 
 function findStart (diagram) {
