@@ -28,6 +28,6 @@ export class Point {
   }
 
   toString () {
-    return `Point(x = ${this.x},y = ${this.y})`
+    return `Point(x = ${this.x}, y = ${this.y})`
   }
 }
