@@ -38,15 +38,8 @@ export function totalLoad (lines) {
   // print(roundedRocks, fixedRocks, lines.length)
 
   let load = 0
-  for (let y = 0; y < lines.length; y++) {
-    let count = 0
-    for (let x = 0; x < lines[y].length; x++) {
-      const p = new Point(x, y)
-      if (roundedRocks.has(p.toString())) {
-        count++
-      }
-    }
-    load += count * (lines.length - y)
+  for (const rock of roundedRocks.values()) {
+    load += lines.length - rock.y
   }
   return load
 }
