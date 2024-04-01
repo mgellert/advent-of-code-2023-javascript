@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import { readLines } from '../common/common'
-import { totalLoad } from './day14'
+import { totalLoad, spinLoad } from './day14'
 
 describe('day 14', () => {
   const testInput = readLines('./day14/test_input.txt')
@@ -12,5 +12,13 @@ describe('day 14', () => {
 
   test('solve part 1', () => {
     expect(totalLoad(input)).toBe(108759)
+  })
+
+  test('test spinLoad', () => {
+    expect(spinLoad(testInput)).toBe(64)
+  })
+
+  test.skip('solve part 2', () => {
+    expect(spinLoad(input)).toBe(89089)
   })
 })
