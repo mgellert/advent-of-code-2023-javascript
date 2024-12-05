@@ -1,15 +1,84 @@
 import { Point } from '../common/common'
 
+export function maxEnergizedTiles (lines) {
+  const tiles = lines.map(line => line.split(''))
+  let max = 0
+
+  for (let y = 0; y < lines.length; y++) {
+    const initialBeam = {
+      start: new Point(0, y),
+      end: searchRight(new Point(0, y), tiles, false),
+      direction: 'right'
+    }
+
+    const done = fillTilesWithBeams(tiles, initialBeam)
+    const energized = countEnergized(tiles, done)
+    if (energized > max) {
+      max = energized
+    }
+  }
+
+  for (let y = 0; y < lines.length; y++) {
+    const initialBeam = {
+      start: new Point(lines[0].length - 1, y),
+      end: searchLeft(new Point(lines[0].length - 1, y), tiles, false),
+      direction: 'left'
+    }
+
+    const done = fillTilesWithBeams(tiles, initialBeam)
+    const energized = countEnergized(tiles, done)
+    if (energized > max) {
+      max = energized
+    }
+  }
+
+  for (let x = 0; x < lines[0].length; x++) {
+    const initialBeam = {
+      start: new Point(x, 0),
+      end: searchDown(new Point(x, 0), tiles, false),
+      direction: 'down'
+    }
+
+    const done = fillTilesWithBeams(tiles, initialBeam)
+    const energized = countEnergized(tiles, done)
+    if (energized > max) {
+      max = energized
+    }
+  }
+
+  for (let x = 0; x < lines[0].length; x++) {
+    const initialBeam = {
+      start: new Point(x, lines.length - 1),
+      end: searchUp(new Point(x, lines.length - 1), tiles, false),
+      direction: 'up'
+    }
+
+    const done = fillTilesWithBeams(tiles, initialBeam)
+    const energized = countEnergized(tiles, done)
+    if (energized > max) {
+      max = energized
+    }
+  }
+
+  return max
+}
+
 export function countEnergizedTiles (lines) {
   const tiles = lines.map(line => line.split(''))
 
-  const done = new Set()
-  const queue = []
   const initialBeam = {
     start: new Point(0, 0),
     end: searchRight(new Point(0, 0), tiles, false),
     direction: 'right'
   }
+
+  const done = fillTilesWithBeams(tiles, initialBeam)
+  return countEnergized(tiles, done)
+}
+
+function fillTilesWithBeams (tiles, initialBeam) {
+  const done = new Set()
+  const queue = []
 
   addIfNotLoop(queue, done, initialBeam)
 
@@ -94,10 +163,6 @@ export function countEnergizedTiles (lines) {
     }
   }
 
-  return countEnergized(tiles, done)
-}
-
-function fillTilesWithBeams (queue, done, initialBeam) {
   return done
 }
 
